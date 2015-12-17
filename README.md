@@ -5,6 +5,6 @@ This is a rewrite of the peeringmatcher found on github using the new peeringdb 
 
 Just run with:
 
-./peeringmatcher.py <asn1> <asn2>
+./peeringmatcher.py '<asn1>' '<asn2>'
 
-Where your AS is <asn1>.
+Where your AS is '<asn1>'
