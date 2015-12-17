@@ -16,6 +16,12 @@ def main():
         print "Example:"
         print "./peeringmatcher.py <asn1> <asn2>"
         print
+    if len(sys.argv) < 3:
+        print "Too many arguments."
+        print
+        print "Example:"
+        print "./peeringmatcher.py <asn1> <asn2>"
+        print
     elif len(sys.argv) == 3:
         api_data_asn1 = requests.get('https://beta.peeringdb.com/api/asn/' + sys.argv[1])
         api_data_asn2 = requests.get('https://beta.peeringdb.com/api/asn/' + sys.argv[2])
