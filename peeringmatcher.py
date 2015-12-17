@@ -55,11 +55,5 @@ def map_id_to_ix(ixlan_id):
     for x in json_data['data']:
         return x['ix']['name']
 
-def get_as_name(asn):
-    api_data = requests.get('https://beta.peeringdb.com/api/asn/' + asn)
-    json_data = api_data.json()
-    for x in json_data['data']:
-        return x['org']['name']
-
 if __name__ == '__main__':
     main()
