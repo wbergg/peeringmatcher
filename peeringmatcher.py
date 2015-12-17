@@ -44,7 +44,7 @@ def main():
             ix = map_id_to_ix(str(key))
             x.add_row([ix, sys.argv[1], asn1[key]['ipv4'], asn1[key]['ipv6']])
             x.add_row([ix, sys.argv[2], asn2[key]['ipv4'], asn2[key]['ipv6']])
-            # How the fuck do I make an empty row!? Ugly below...
+            # How do I make an empty row!? Ugly below...
             x.add_row(["", "", "", ""])
         # Print pretty table
         print x
