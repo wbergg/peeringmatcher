@@ -16,29 +16,30 @@ def main():
         print "Example:"
         print "./peeringmatcher.py <asn1> <asn2>"
         print
-    if len(sys.argv) < 3:
-        print "Too many arguments."
-        print
-        print "Example:"
-        print "./peeringmatcher.py <asn1> <asn2>"
-        print
     elif len(sys.argv) == 3:
-        api_data_asn1 = requests.get('https://beta.peeringdb.com/api/asn/' + sys.argv[1])
-        api_data_asn2 = requests.get('https://beta.peeringdb.com/api/asn/' + sys.argv[2])
+        # Print AS-numbers to names
+        print
+        print "Mututal peering locations for AS%s (%s) and AS%s (%s)" % (sys.argv[1], (get_as_name(sys.argv[1])), sys.argv[2], (get_as_name(sys.argv[2])))
+        print
+        
+        api_data_asn1 = requests.get('https://www.peeringdb.com/api/netixlan?asn=' + sys.argv[1])
+        api_data_asn2 = requests.get('https://www.peeringdb.com/api/netixlan?asn=' + sys.argv[2])
         json_data_asn1 = api_data_asn1.json()
         json_data_asn2 = api_data_asn2.json()
 
         asn1 = dict()
         asn2 = dict()
         for x in json_data_asn1['data']:
-            for y in x['netixlan_set']:
-                data = { 'ipv4': y['ipaddr4'], 'ipv6': y['ipaddr6']}
-                asn1[y['ixlan_id']] = data
+            if x['ixlan_id'] not in asn1:
+                asn1[x['ixlan_id']] = list()
+            data = { 'ipv4': x['ipaddr4'], 'ipv6': x['ipaddr6'] }
+            asn1[x['ixlan_id']].append(data)
         
         for x in json_data_asn2['data']:
-            for y in x['netixlan_set']:
-                data = { 'ipv4': y['ipaddr4'], 'ipv6': y['ipaddr6']}
-                asn2[y['ixlan_id']] = data
+            if x['ixlan_id'] not in asn2:
+                asn2[x['ixlan_id']] = list()
+            data = { 'ipv4': x['ipaddr4'], 'ipv6': x['ipaddr6'] }
+            asn2[x['ixlan_id']].append(data)
 
         # Create a pretty table
         x = PrettyTable(["IXLAN", "ASN", "IPv4", "IPv6"])
@@ -48,18 +49,28 @@ def main():
         for key in set(asn1.keys()) & set(asn2.keys()):
             # Map IX number to human readable
             ix = map_id_to_ix(str(key))
-            x.add_row([ix, sys.argv[1], asn1[key]['ipv4'], asn1[key]['ipv6']])
-            x.add_row([ix, sys.argv[2], asn2[key]['ipv4'], asn2[key]['ipv6']])
-            # How do I make an empty row!? Ugly below...
+            for y in asn1[key]:
+                x.add_row([ix, sys.argv[1], y['ipv4'], y['ipv6']])
+            for y in asn2[key]:
+                x.add_row([ix, sys.argv[2], y['ipv4'], y['ipv6']])
+            # How the fuck do I make an empty row!? Ugly below...
             x.add_row(["", "", "", ""])
         # Print pretty table
         print x
 
 def map_id_to_ix(ixlan_id):
-    api_data = requests.get('https://beta.peeringdb.com/api/ixlan/' + ixlan_id)
+    #print ixlan_id
+    api_data = requests.get('https://www.peeringdb.com/api/ix?id=' + ixlan_id)
     json_data = api_data.json()
     for x in json_data['data']:
-        return x['ix']['name']
+        return x['name']
+
+def get_as_name(asn):
+    api_data = requests.get('https://www.peeringdb.com/api/net?asn=' + asn)
+    json_data = api_data.json()
+    for x in json_data['data']:
+        return x['name']
 
 if __name__ == '__main__':
     main()
+
